@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Customer</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      :root {
+        --mt-pink: #e6007e;
+        --mt-green: #00b140;
+        --mt-orange: #ff9900;
+        --mt-purple: #9333ea;
+        --mt-gray-50: #f9fafb;
+        --mt-gray-100: #f3f4f6;
+        --mt-gray-200: #e5e7eb;
+        --mt-gray-300: #d1d5db;
+        --mt-gray-500: #6b7280;
+        --mt-gray-700: #374151;
+        --card-bg: #fff;
+        --border: #e5e7eb;
+        --radius: 14px;
+        --shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        margin: 0;
+        background: var(--mt-gray-50);
+        color: #111827;
+      }
+
+      .container {
+        max-width: 1200px;
+        padding: 24px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+      }
+
+      .header-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--mt-pink), var(--mt-green));
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .muted {
+        color: var(--mt-gray-500);
+        font-size: 12px;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        background: #fff;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+
+      .tab-btn {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .tab-btn.active {
+        background: var(--mt-gray-100);
+        border-color: var(--mt-gray-300);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .grid-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      @media (max-width: 960px) {
+        .grid-5,
+        .grid-4,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+
+      .card-h {
+        padding: 16px 16px 0;
+      }
+
+      .card-t {
+        margin: 0;
+        font-size: 14px;
+        color: var(--mt-gray-700);
+        font-weight: 600;
+      }
+
+      .card-c {
+        padding: 16px;
+      }
+
+      .kpi {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--mt-pink);
+      }
+
+      .kpi-sub {
+        font-size: 12px;
+        color: var(--mt-gray-500);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+      }
+
+      thead th {
+        color: var(--mt-gray-700);
+        font-size: 13px;
+      }
+
+      tr:hover td {
+        background: #fafafa;
+      }
+
+      .progress {
+        height: 8px;
+        background: #eee;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--mt-pink), var(--mt-orange));
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .between {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .muted-14 {
+        font-size: 14px;
+        color: var(--mt-gray-500);
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--mt-gray-700);
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 800;
+        margin: 0;
+      }
+
+      .subtle {
+        color: var(--mt-gray-500);
+        font-size: 13px;
+      }
+
+      .accent {
+        color: var(--mt-pink);
+        font-weight: 800;
+      }
+
+      .danger-card {
+        background: #fff1f2;
+        border-left: 4px solid var(--mt-pink);
+        border-radius: 12px;
+        padding: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-badge">MT</div>
+          <div>
+            <div style="font-weight: 800; font-size: 18px">Dashboard Customer</div>
+            <div class="muted">Relatório Semanal de Indicadores</div>
+          </div>
+        </div>
+
+        <div style="text-align: right">
+          <div
+            style="
+              margin-bottom: 8px;
+              display: flex;
+              gap: 10px;
+              justify-content: flex-end;
+              flex-wrap: wrap;
+            "
+          >
+            <div>
+              <label for="year-filter" class="section-title" style="font-size: 13px">
+                Filtrar por Ano:
+              </label>
+              <select
+                id="year-filter"
+                class="pill"
+                style="margin-left: 8px; font-size: 13px; padding: 4px 8px"
+              ></select>
+            </div>
+            <div>
+              <label for="month-filter" class="section-title" style="font-size: 13px">
+                Filtrar por Mês:
+              </label>
+              <select
+                id="month-filter"
+                class="pill"
+                style="margin-left: 8px; font-size: 13px; padding: 4px 8px"
+              ></select>
+            </div>
+          </div>
+          <div class="muted">Última atualização</div>
+          <div id="last-update" style="font-weight: 600; font-size: 13px">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="visao-geral">Visão Geral</button>
+        <button class="tab-btn" data-tab="fgts">FGTS</button>
+        <button class="tab-btn" data-tab="inss">INSS</button>
+        <button class="tab-btn" data-tab="PRIVADO">PRIVADO</button>
+        <button class="tab-btn" data-tab="experiencia">Experiência</button>
+      </div>
+
+      <!-- VISÃO GERAL -->
+      <div class="tab-content active" id="visao-geral">
+        <div class="grid grid-5" style="margin-top: 16px">
+          <div class="card">
+            <div class="card-h between">
+              <div class="card-t">Clientes na Carteira</div>
+            </div>
+            <div class="card-c">
+              <div class="kpi" id="kpi-carteira"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h between">
+              <div class="card-t">Ativos na Plataforma</div>
+            </div>
+            <div class="card-c">
+              <div class="kpi" id="kpi-ativos"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h between">
+              <div class="card-t">Clientes Entrantes</div>
+            </div>
+            <div class="card-c">
+              <div class="kpi" id="kpi-entrantes"></div>
+              <div class="kpi-sub"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h between">
+              <div class="card-t">Recorrência Atendimento</div>
+            </div>
+            <div class="card-c">
+              <div class="kpi" id="kpi-recorrencia"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h between">
+              <div class="card-t">Contact Rate</div>
+            </div>
+            <div class="card-c">
+              <div class="kpi" id="kpi-contact"></div>
+              <div class="kpi-sub">Entrantes sobre clientes na carteira</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-3" id="produtos-cards" style="margin-top: 16px"></div>
+
+        <div class="card" style="margin-top: 16px">
+          <div class="card-h">
+            <h3 class="section-title">Funil Semanal por Produto - Últimas 4 Semanas</h3>
+            <div class="subtle">Comparativo de evolução</div>
+          </div>
+          <div class="card-c" id="funil-tabelas"></div>
+        </div>
+
+        <div class="card" style="margin-top: 16px">
+          <div class="card-h">
+            <h3 class="section-title">Evolução Semanal - Clientes Entrantes</h3>
+          </div>
+          <div class="card-c">
+            <canvas id="chartEvolucaoSemanal" height="280"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS DE PRODUTO -->
+      <div class="tab-content" id="fgts"></div>
+      <div class="tab-content" id="inss"></div>
+      <div class="tab-content" id="PRIVADO"></div>
+
+      <!-- EXPERIÊNCIA -->
+      <div class="tab-content" id="experiencia">
+        <div class="grid grid-4" id="cards-experiencia" style="margin-top: 16px"></div>
+
+        <div class="card" style="margin-top: 16px">
+          <div class="card-h">
+            <h3 class="section-title">Evolução dos Indicadores de Experiência</h3>
+            <div class="subtle">Sheets: evolucao_experiencia</div>
+          </div>
+          <div class="card-c">
+            <canvas id="chartExperiencia" height="320"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* =========================
+         CONFIGURAÇÕES GERAIS
+      ========================= */
+      const DASHBOARD_SHEET_ID = "1Qk4LzvKDr8q1VYxhB5Gx4tKd3QtaFL7Qp9A_GliiAKE";
+      const ULTIMA_ATUALIZACAO_SHEET_ID = "1aTaua3I0MHJrvObrhVXfJV7MsLcp-ai6NItKSQ6b25M";
+
+      const SHEETS = {
+        visao_mes_produto: "visao_mes_produto",
+        visao_semanal_produto: "visao_semanal_produto",
+        evolucao_experiencia: "evolucao_experiencia",
+        experiencia_resumo: "experiencia_resumo",
+        dores_produto: "dores_produto",
+        ultima_atualizacao: "ultima_atualizacao",
+      };
+
+      const YEAR_COL_BY_SHEET = {
+        visao_mes_produto: 12,
+        visao_semanal_produto: 12,
+        dores_produto: 6,
+        evolucao_experiencia: 6,
+      };
+
+      /* =========================
+         FUNÇÕES UTILITÁRIAS
+      ========================= */
+      function setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+
+      const fmtInt = (n) => Number(n || 0).toLocaleString("pt-BR");
+
+      const fmt1dec = (n) =>
+        Number(n || 0).toLocaleString("pt-BR", {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        });
+
+      const fmtPercent2 = (n) => {
+        let value = Number(n || 0);
+        if (value <= 1) value *= 100;
+        return (
+          value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }) + "%"
+        );
+      };
+
+      const fmtAtivos = (n) =>
+        Number(n || 0).toLocaleString("pt-BR", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+
+      const toFloat = (v) =>
+        v == null || v === ""
+          ? null
+          : parseFloat(String(v).replace("%", "").replace(",", "."));
+
+      const toInt = (v) =>
+        v == null || v === "" ? null : parseInt(String(v).replace(/\D/g, ""), 10);
+
+      /* =========================
+         LEITURA DE DADOS (GVIZ JSON)
+      ========================= */
+      async function fetchGVizAll(sheetName) {
+        const url = `https://docs.google.com/spreadsheets/d/${DASHBOARD_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent("SELECT *")}`;
+
+        const response = await fetch(url, { cache: "no-store" });
+        const text = await response.text();
+        const jsonStr = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+        const payload = JSON.parse(jsonStr);
+
+        const cols = (payload.table.cols || []).map((c) => c.label || c.id);
+
+        const rows = (payload.table.rows || []).map((r) => {
+          const obj = {};
+          const arr = [];
+
+          (r.c || []).forEach((cell, i) => {
+            const value = cell ? cell.v ?? cell.f : null;
+            obj[cols[i]] = value;
+            arr[i] = value;
+          });
+
+          for (let i = 0; i < cols.length; i += 1) {
+            if (!(i in arr)) arr[i] = null;
+            if (!(cols[i] in obj)) obj[cols[i]] = null;
+          }
+
+          obj.__arr = arr;
+          obj.__sheet = sheetName;
+          return obj;
+        });
+
+        return rows;
+      }
+
+      /* =========================
+         ÚLTIMA ATUALIZAÇÃO (CSV)
+      ========================= */
+      function parseFirstDataCellFromCsv(csvText) {
+        if (!csvText) return "";
+
+        const lines = String(csvText)
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        if (!lines.length) return "";
+
+        function cleanCell(cell) {
+          let value = String(cell ?? "").trim();
+          if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+          value = value.replace(/""/g, '"').replace(/\\"/g, '"').trim();
+          return value;
+        }
+
+        function firstCell(line) {
+          const idx = line.indexOf(",");
+          const cell = idx >= 0 ? line.slice(0, idx) : line;
+          return cleanCell(cell);
+        }
+
+        if (lines.length >= 2) {
+          const secondLineValue = firstCell(lines[1]);
+          if (secondLineValue) return secondLineValue;
+        }
+
+        return firstCell(lines[0]);
+      }
+
+      async function fetchUltimaAtualizacao() {
+        const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(ULTIMA_ATUALIZACAO_SHEET_ID)}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEETS.ultima_atualizacao)}&range=B1`;
+        const response = await fetch(url, { cache: "no-store" });
+        const text = await response.text();
+        const value = parseFirstDataCellFromCsv(text);
+        return value || "—";
+      }
+
+      /* =========================
+         CACHE BRUTO E FILTROS
+      ========================= */
+      const raw = {
+        mes: [],
+        sem: [],
+        evoExp: [],
+        resExp: [],
+        dores: [],
+      };
+
+      function getUniqueMonths(rows) {
+        const keys = ["Mês", "Mes", "mes", "mês", "MES", "MÊS"];
+
+        return [
+          ...new Set(
+            rows
+              .map((row) => {
+                for (const key of keys) {
+                  if (row[key]) return String(row[key]);
+                }
+                return null;
+              })
+              .filter(Boolean)
+          ),
+        ];
+      }
+
+      function filterByMonth(rows, month) {
+        if (!month) return rows;
+
+        const keys = ["Mês", "Mes", "mes", "mês", "MES", "MÊS"];
+
+        return rows.filter((row) => {
+          for (const key of keys) {
+            if (String(row[key] || "") === String(month)) return true;
+          }
+          return false;
+        });
+      }
+
+      function getYearFromRow(row, sheetName) {
+        const keys = ["Ano", "ano", "ANO", "Year", "year", "YYYY", "yyyy"];
+
+        for (const key of keys) {
+          const value = row?.[key];
+          const year = toInt(value);
+          if (year != null && !Number.isNaN(year)) return year;
+        }
+
+        const idx = YEAR_COL_BY_SHEET?.[sheetName];
+        if (idx != null && row?.__arr && row.__arr.length > idx) {
+          const year = toInt(row.__arr[idx]);
+          if (year != null && !Number.isNaN(year)) return year;
+        }
+
+        return null;
+      }
+
+      function getUniqueYears(rows, sheetName) {
+        const years = rows
+          .map((row) => getYearFromRow(row, sheetName))
+          .filter((value) => value != null && !Number.isNaN(value));
+
+        const uniq = [...new Set(years)];
+        uniq.sort((a, b) => a - b);
+        return uniq;
+      }
+
+      function filterByYear(rows, year, sheetName) {
+        if (!year || String(year).toLowerCase() === "todos") return rows;
+        return rows.filter(
+          (row) => String(getYearFromRow(row, sheetName) ?? "") === String(year)
+        );
+      }
+
+      /* =========================
+         TRANSFORMAÇÃO DOS DADOS
+      ========================= */
+      function pickGeral(mes) {
+        const geral = mes.find(
+          (row) => String((row.Produto ?? row.produto) || "").toLowerCase() === "geral"
+        );
+        return geral || mes[0] || {};
+      }
+
+      function lastNonNull(arr, key) {
+        for (let i = arr.length - 1; i >= 0; i -= 1) {
+          const value = toFloat(arr[i]?.[key]);
+          if (value != null && !Number.isNaN(value)) return value;
+        }
+        return null;
+      }
+
+      function buildFromSheets({ mes, sem, evoExp, resExp, dores }) {
+        const geral = pickGeral(mes);
+
+        const indicadoresGerais = {
+          clientesCarteira: toInt(geral.clientes_carteira) || 0,
+          ativosPlataforma: toFloat(geral.ativos_plataforma_bi) || 0,
+          clientesEntrantes: toInt(geral.clientes_entrantes) || 0,
+          recorrenciaAtendimento: toFloat(geral.recorrencia_atendimento_pct) || 0,
+          contactRate: toFloat(geral.contact_rate_pct) || 0,
+        };
+
+        const produtos = {};
+
+        mes
+          .filter(
+            (row) => String((row.Produto ?? row.produto) || "").toLowerCase() !== "geral"
+          )
+          .forEach((row) => {
+            let key = String(row.Produto ?? row.produto ?? "")
+              .trim()
+              .toLowerCase();
+
+            if (key.includes("consign")) key = "PRIVADO";
+
+            produtos[key] = {
+              clientes: toInt(row.clientes_carteira) || 0,
+              entrantes: toInt(row.clientes_entrantes) || 0,
+              recorrencia: toFloat(row.recorrencia_atendimento_pct) || 0,
+              contactRate: toFloat(row.contact_rate_pct) || 0,
+              dores: [],
+            };
+          });
+
+        dores.forEach((item) => {
+          const produto = String(item.produto || "").toLowerCase();
+          const key = produto.includes("consign") ? "PRIVADO" : produto;
+
+          if (!produtos[key]) return;
+
+          produtos[key].dores = produtos[key].dores || [];
+          produtos[key].dores.push({
+            nome: String(item.nome || "").trim(),
+            percentual:
+              item.percentual != null
+                ? Math.round(toFloat(item.percentual) * 10000) / 100
+                : null,
+            descricao: String(item.descricao || "").trim(),
+          });
+
+          produtos[key].dores = produtos[key].dores.slice(0, 3);
+        });
+
+        const byProd = (name) =>
+          sem.filter((row) =>
+            String(row.Produto ?? row.produto ?? "")
+              .toLowerCase()
+              .includes(name)
+          );
+
+        function funil(prod) {
+          const rows = byProd(prod);
+          const tail = rows.slice(-4);
+
+          return {
+            semanas: tail.map((row) => String(row.Semana ?? row.semana ?? "")),
+            ativos: tail.map((row) => toFloat(row.ativos_plataforma_bi)),
+            entrantes: tail.map((row) => toInt(row.clientes_entrantes)),
+            contact: tail.map((row) => toFloat(row.contact_rate_pct)),
+            recorrencia: tail.map((row) => toFloat(row.recorrencia_atendimento_pct)),
+          };
+        }
+
+        const fFGTS = funil("fgts");
+        const fINSS = funil("inss");
+        const fCons = funil("consign");
+
+        const dadosFunilSemanal = {
+          semanas:
+            fFGTS.semanas.length > 0
+              ? fFGTS.semanas
+              : fINSS.semanas.length > 0
+                ? fINSS.semanas
+                : fCons.semanas,
+          indicadores: [
+            {
+              nome: "Ativos na Plataforma",
+              fgts: fFGTS.ativos.map((value) => fmtAtivos(value)),
+              inss: fINSS.ativos.map((value) => fmtAtivos(value)),
+              PRIVADO: fCons.ativos.map((value) => fmtAtivos(value)),
+            },
+            {
+              nome: "Entrantes",
+              fgts: fFGTS.entrantes.map((value) => fmtInt(value)),
+              inss: fINSS.entrantes.map((value) => fmtInt(value)),
+              PRIVADO: fCons.entrantes.map((value) => fmtInt(value)),
+            },
+            {
+              nome: "Contact Rate sobre carteira de clientes",
+              fgts: fFGTS.contact.map((value) => fmtPercent2(value)),
+              inss: fINSS.contact.map((value) => fmtPercent2(value)),
+              PRIVADO: fCons.contact.map((value) => fmtPercent2(value)),
+            },
+            {
+              nome: "Recorrência",
+              fgts: fFGTS.recorrencia.map((value) => fmt1dec(value)),
+              inss: fINSS.recorrencia.map((value) => fmt1dec(value)),
+              PRIVADO: fCons.recorrencia.map((value) => fmt1dec(value)),
+            },
+          ],
+        };
+
+        const dadosEvolucaoSemanal = (dadosFunilSemanal.semanas || []).map((semana, i) => ({
+          semana,
+          fgts: fFGTS.entrantes[i] ?? null,
+          inss: fINSS.entrantes[i] ?? null,
+          PRIVADO: fCons.entrantes[i] ?? null,
+        }));
+
+        const resumoExp = resExp[0] || {};
+        const csatResumo = toFloat(resumoExp.csat) ?? lastNonNull(evoExp, "csat") ?? 0;
+        const raResumo =
+          toFloat(resumoExp.reclame_aqui) ?? lastNonNull(evoExp, "reclame_aqui") ?? 0;
+        const psResumo =
+          toFloat(resumoExp.play_store) ?? lastNonNull(evoExp, "play_store") ?? 0;
+        const bacenResumo =
+          resumoExp.bacen != null
+            ? String(resumoExp.bacen)
+            : String(lastNonNull(evoExp, "bacen") ?? "");
+
+        const csatNorm = csatResumo != null && csatResumo > 1 ? csatResumo / 100 : csatResumo || 0;
+
+        const indicadoresExperiencia = {
+          csat: { valor: csatNorm, meta: 0.85 },
+          reclameAqui: { nota: raResumo, meta: 8.0 },
+          playStore: { nota: psResumo, meta: 4.5 },
+          bacen: { texto: bacenResumo, meta: 10 },
+        };
+
+        const dadosEvolucaoExperiencia = evoExp.map((row) => ({
+          semana: String(row.semana || ""),
+          csat: toFloat(row.csat),
+          reclameAqui: toFloat(row.reclame_aqui),
+          playStore: toFloat(row.play_store),
+        }));
+
+        return {
+          indicadoresGerais,
+          produtos,
+          dadosFunilSemanal,
+          dadosEvolucaoSemanal,
+          indicadoresExperiencia,
+          dadosEvolucaoExperiencia,
+        };
+      }
+
+      /* =========================
+         RENDERIZAÇÃO
+      ========================= */
+      let chartEvolSem = null;
+      let chartExp = null;
+
+      function calcProgress(titulo, valor, meta) {
+        if (meta != null && !Number.isNaN(meta) && meta > 0) {
+          return Math.max(0, Math.min(100, (Number(valor || 0) / meta) * 100));
+        }
+
+        if (titulo === "CSAT") {
+          const current = Number(valor || 0);
+          const pct = current <= 1 ? current * 100 : current;
+          return Math.max(0, Math.min(100, pct));
+        }
+
+        if (titulo === "Play Store") {
+          return Math.max(0, Math.min(100, (Number(valor || 0) / 5) * 100));
+        }
+
+        if (titulo === "Reclame Aqui") {
+          return Math.max(0, Math.min(100, (Number(valor || 0) / 10) * 100));
+        }
+
+        return 0;
+      }
+
+      function renderAll(state) {
+        const {
+          indicadoresGerais,
+          produtos,
+          dadosFunilSemanal,
+          dadosEvolucaoSemanal,
+          indicadoresExperiencia,
+          dadosEvolucaoExperiencia,
+        } = state;
+
+        setText("kpi-carteira", fmtInt(indicadoresGerais.clientesCarteira || 0));
+        setText("kpi-ativos", fmtAtivos(indicadoresGerais.ativosPlataforma || 0));
+        setText("kpi-entrantes", fmtInt(indicadoresGerais.clientesEntrantes || 0));
+        setText(
+          "kpi-recorrencia",
+          fmt1dec(indicadoresGerais.recorrenciaAtendimento || 0)
+        );
+        setText("kpi-contact", fmtPercent2(indicadoresGerais.contactRate ?? 0));
+
+        const produtosCards = document.getElementById("produtos-cards");
+        produtosCards.innerHTML = "";
+
+        [
+          ["fgts", "FGTS"],
+          ["inss", "INSS"],
+          ["PRIVADO", "PRIVADO"],
+        ].forEach(([key, label]) => {
+          const produto = produtos[key];
+          if (!produto) return;
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="card-h">
+              <div class="row">
+                <div class="pill">${label}</div>
+                <h4 class="section-title" style="color: var(--mt-pink)">${label}</h4>
+              </div>
+            </div>
+            <div class="card-c">
+              <div class="grid grid-2">
+                <div>
+                  <div class="muted-14">Clientes na carteira</div>
+                  <div class="accent">${fmtInt(produto.clientes || 0)}</div>
+                </div>
+                <div>
+                  <div class="muted-14">Clientes Entrantes</div>
+                  <div class="accent">${fmtInt(produto.entrantes || 0)}</div>
+                </div>
+                <div>
+                  <div class="muted-14">Recorrência</div>
+                  <div class="accent">${fmt1dec(produto.recorrencia || 0)}</div>
+                </div>
+                <div>
+                  <div class="muted-14">Contact Rate</div>
+                  <div class="accent">${fmtPercent2(produto.contactRate ?? 0)}</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 12px">
+                <div class="muted-14" style="margin-bottom: 6px; font-weight: 700">
+                  Top 3 Dores:
+                </div>
+                ${
+                  (produto.dores || [])
+                    .slice(0, 3)
+                    .map(
+                      (dor, i) => `
+                    <div class="danger-card" style="margin-bottom: 8px">
+                      <div class="between">
+                        <span style="font-size: 13px; font-weight: 700">
+                          ${i + 1}. ${dor.nome || ""}
+                        </span>
+                        ${dor.percentual != null ? `<span class="accent">${dor.percentual}%</span>` : ""}
+                      </div>
+                      ${dor.descricao ? `<div class="muted-14" style="margin-top: 6px">${dor.descricao}</div>` : ""}
+                    </div>
+                  `
+                    )
+                    .join("") || "<!-- Sem dores na planilha -->"
+                }
+              </div>
+            </div>
+          `;
+          produtosCards.appendChild(card);
+        });
+
+        const funilWrap = document.getElementById("funil-tabelas");
+        funilWrap.innerHTML = "";
+
+        function tabelaProduto(nome, cor, key) {
+          const indicadores = dadosFunilSemanal.indicadores || [];
+          const semanas = dadosFunilSemanal.semanas || [];
+
+          const html = `
+            <div class="row" style="margin-bottom: 8px">
+              <div class="pill" style="border-color: ${cor}; color: ${cor}; font-weight: 800">
+                ${nome}
+              </div>
+            </div>
+            <div style="overflow: auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Indicador</th>
+                    ${semanas.map((semana) => `<th style="text-align: center">${semana}</th>`).join("")}
+                  </tr>
+                </thead>
+                <tbody>
+                  ${indicadores
+                    .map(
+                      (ind) => `
+                    <tr>
+                      <td style="font-weight: 600">${ind.nome}</td>
+                      ${(ind[key] || [])
+                        .map(
+                          (value) => `
+                        <td style="text-align: center; font-weight: 700; color: ${cor}">
+                          ${value}
+                        </td>
+                      `
+                        )
+                        .join("")}
+                    </tr>
+                  `
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+            </div>
+          `;
+
+          const box = document.createElement("div");
+          box.style.marginBottom = "16px";
+          box.innerHTML = html;
+          return box;
+        }
+
+        funilWrap.appendChild(tabelaProduto("FGTS", "var(--mt-pink)", "fgts"));
+        funilWrap.appendChild(tabelaProduto("INSS", "var(--mt-green)", "inss"));
+        funilWrap.appendChild(tabelaProduto("PRIVADO", "var(--mt-orange)", "PRIVADO"));
+
+        if (chartEvolSem) chartEvolSem.destroy();
+        chartEvolSem = new Chart(document.getElementById("chartEvolucaoSemanal"), {
+          type: "line",
+          data: {
+            labels: (dadosEvolucaoSemanal || []).map((item) => item.semana),
+            datasets: [
+              {
+                label: "FGTS",
+                data: (dadosEvolucaoSemanal || []).map((item) => item.fgts),
+                tension: 0.3,
+                borderWidth: 2,
+              },
+              {
+                label: "INSS",
+                data: (dadosEvolucaoSemanal || []).map((item) => item.inss),
+                tension: 0.3,
+                borderWidth: 2,
+              },
+              {
+                label: "PRIVADO",
+                data: (dadosEvolucaoSemanal || []).map((item) => item.PRIVADO),
+                tension: 0.3,
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom" },
+            },
+          },
+        });
+
+        function renderProdutoTab(containerId, key, label) {
+          const root = document.getElementById(containerId);
+          const produto = produtos[key];
+          if (!root) return;
+
+          if (!produto) {
+            root.innerHTML = `
+              <div class="card" style="margin-top: 16px">
+                <div class="card-c"><!-- Sem dados --></div>
+              </div>
+            `;
+            return;
+          }
+
+          root.innerHTML = `
+            <div class="grid grid-3" style="margin-top: 16px">
+              <div class="card">
+                <div class="card-h">
+                  <h4 class="section-title">${label} - Indicadores Principais</h4>
+                </div>
+                <div class="card-c">
+                  <div class="grid grid-2">
+                    <div>
+                      <div class="muted-14">Clientes na carteira</div>
+                      <div class="accent">${fmtInt(produto.clientes || 0)}</div>
+                    </div>
+                    <div>
+                      <div class="muted-14">Clientes Entrantes</div>
+                      <div class="accent">${fmtInt(produto.entrantes || 0)}</div>
+                    </div>
+                    <div>
+                      <div class="muted-14">Recorrência</div>
+                      <div class="accent">${fmt1dec(produto.recorrencia || 0)}</div>
+                    </div>
+                    <div>
+                      <div class="muted-14">Contact Rate</div>
+                      <div class="accent">${fmtPercent2(produto.contactRate ?? 0)}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 16px">
+              <div class="card-h">
+                <h4 class="section-title">${label} - Top 3 Dores Identificadas</h4>
+              </div>
+              <div class="card-c" id="dores-${containerId}"></div>
+            </div>
+          `;
+
+          const doresWrap = document.getElementById(`dores-${containerId}`);
+          doresWrap.innerHTML = "";
+
+          if (produto.dores && produto.dores.length) {
+            produto.dores.slice(0, 3).forEach((dor, i) => {
+              const div = document.createElement("div");
+              div.className = "danger-card";
+              div.style.marginBottom = "8px";
+              div.innerHTML = `
+                <div class="between">
+                  <div style="font-weight: 700">${i + 1}. ${dor.nome || ""}</div>
+                  ${dor.percentual != null ? `<div class="accent">${dor.percentual}%</div>` : ""}
+                </div>
+                ${dor.descricao ? `<div class="muted-14" style="margin-top: 6px">${dor.descricao}</div>` : ""}
+              `;
+              doresWrap.appendChild(div);
+            });
+          } else {
+            doresWrap.innerHTML = "<!-- Sem dores na planilha -->";
+          }
+        }
+
+        renderProdutoTab("fgts", "fgts", "FGTS");
+        renderProdutoTab("inss", "inss", "INSS");
+        renderProdutoTab("PRIVADO", "PRIVADO", "PRIVADO");
+
+        const cardsExp = document.getElementById("cards-experiencia");
+        cardsExp.innerHTML = "";
+
+        const e = indicadoresExperiencia;
+        const defs = [
+          {
+            titulo: "CSAT",
+            valorView: fmtPercent2(e.csat.valor),
+            rawValor: e.csat.valor,
+            meta: e.csat.meta,
+            showBar: true,
+          },
+          {
+            titulo: "Reclame Aqui",
+            valorView: e.reclameAqui.nota ?? "-",
+            rawValor: e.reclameAqui.nota,
+            meta: e.reclameAqui.meta,
+            showBar: true,
+          },
+          {
+            titulo: "Play Store",
+            valorView: e.playStore.nota ?? "-",
+            rawValor: e.playStore.nota,
+            meta: e.playStore.meta,
+            showBar: true,
+          },
+          {
+            titulo: "BACEN",
+            valorView: (e.bacen.texto ?? "").toString(),
+            rawValor: null,
+            meta: e.bacen.meta,
+            showBar: false,
+          },
+        ];
+
+        defs.forEach((def) => {
+          const percent = def.showBar ? calcProgress(def.titulo, def.rawValor, def.meta) : 0;
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="card-h between">
+              <div class="card-t">${def.titulo}</div>
+            </div>
+            <div class="card-c">
+              <div class="kpi">${def.valorView}</div>
+              <div class="muted-14">Meta: ${def.meta ?? "—"}</div>
+              ${
+                def.showBar
+                  ? `
+                    <div class="progress" style="margin-top: 8px">
+                      <span style="width: ${percent}%"></span>
+                    </div>
+                  `
+                  : ""
+              }
+            </div>
+          `;
+          cardsExp.appendChild(card);
+        });
+
+        if (chartExp) chartExp.destroy();
+        chartExp = new Chart(document.getElementById("chartExperiencia"), {
+          type: "line",
+          data: {
+            labels: (dadosEvolucaoExperiencia || []).map((item) => item.semana),
+            datasets: [
+              {
+                label: "CSAT",
+                data: (dadosEvolucaoExperiencia || []).map((item) => item.csat),
+                borderWidth: 2,
+                tension: 0.3,
+              },
+              {
+                label: "Reclame Aqui",
+                data: (dadosEvolucaoExperiencia || []).map((item) => item.reclameAqui),
+                borderWidth: 2,
+                tension: 0.3,
+              },
+              {
+                label: "Play Store",
+                data: (dadosEvolucaoExperiencia || []).map((item) => item.playStore),
+                borderWidth: 2,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom" },
+            },
+          },
+        });
+      }
+
+      /* =========================
+         BOOT E FILTROS
+      ========================= */
+      async function loadAllRaw() {
+        const [mes, sem, evoExp, resExp, dores] = await Promise.all([
+          fetchGVizAll(SHEETS.visao_mes_produto),
+          fetchGVizAll(SHEETS.visao_semanal_produto),
+          fetchGVizAll(SHEETS.evolucao_experiencia),
+          fetchGVizAll(SHEETS.experiencia_resumo),
+          fetchGVizAll(SHEETS.dores_produto),
+        ]);
+
+        raw.mes = mes;
+        raw.sem = sem;
+        raw.evoExp = evoExp;
+        raw.resExp = resExp;
+        raw.dores = dores;
+      }
+
+      function applyFiltersAndRender(year, month) {
+        const mesF = filterByMonth(
+          filterByYear(raw.mes, year, SHEETS.visao_mes_produto),
+          month
+        );
+        const semF = filterByMonth(
+          filterByYear(raw.sem, year, SHEETS.visao_semanal_produto),
+          month
+        );
+        const doresF = filterByMonth(filterByYear(raw.dores, year, SHEETS.dores_produto), month);
+        const evoExpF = filterByMonth(
+          filterByYear(raw.evoExp, year, SHEETS.evolucao_experiencia),
+          month
+        );
+
+        const resExpFY = filterByYear(raw.resExp, year, SHEETS.experiencia_resumo);
+        const resExpFM = filterByMonth(resExpFY, month);
+
+        const state = buildFromSheets({
+          mes: mesF,
+          sem: semF,
+          evoExp: evoExpF,
+          resExp: resExpFM,
+          dores: doresF,
+        });
+
+        renderAll(state);
+      }
+
+      function populateSelect(selectEl, values, { includeTodos = false, todosLabel = "Todos" } = {}) {
+        selectEl.innerHTML = "";
+
+        if (includeTodos) {
+          const opt = document.createElement("option");
+          opt.value = "Todos";
+          opt.textContent = todosLabel;
+          selectEl.appendChild(opt);
+        }
+
+        values.forEach((value) => {
+          const opt = document.createElement("option");
+          opt.value = String(value);
+          opt.textContent = String(value);
+          selectEl.appendChild(opt);
+        });
+      }
+
+      function rebuildMonthOptionsForYear(year) {
+        const monthSelect = document.getElementById("month-filter");
+        const baseRows = filterByYear(raw.mes, year, SHEETS.visao_mes_produto);
+        const months = getUniqueMonths(baseRows);
+
+        populateSelect(monthSelect, months, { includeTodos: false });
+
+        const initialMonth = months.length ? months[months.length - 1] : null;
+        if (initialMonth) monthSelect.value = initialMonth;
+
+        return initialMonth;
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const last = await fetchUltimaAtualizacao();
+          setText("last-update", last);
+        } catch (error) {
+          setText("last-update", "—");
+        }
+
+        await loadAllRaw();
+
+        const yearSelect = document.getElementById("year-filter");
+        const monthSelect = document.getElementById("month-filter");
+
+        const years = getUniqueYears(raw.mes, SHEETS.visao_mes_produto);
+        populateSelect(yearSelect, years, { includeTodos: false });
+
+        const initialYear = years.length ? years[years.length - 1] : null;
+        if (initialYear != null) yearSelect.value = String(initialYear);
+
+        const initialMonth = rebuildMonthOptionsForYear(initialYear);
+
+        yearSelect.addEventListener("change", (event) => {
+          const year = event.target.value;
+          const month = rebuildMonthOptionsForYear(year);
+          applyFiltersAndRender(year, month);
+        });
+
+        monthSelect.addEventListener("change", (event) => {
+          applyFiltersAndRender(yearSelect.value, event.target.value);
+        });
+
+        applyFiltersAndRender(initialYear, initialMonth);
+      });
+
+      /* =========================
+         CONTROLE DE TABS
+      ========================= */
+      document.addEventListener("click", (event) => {
+        const btn = event.target.closest(".tab-btn");
+        if (!btn) return;
+
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach((content) =>
+          content.classList.remove("active")
+        );
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    </script>
+  </body>
+</html>
